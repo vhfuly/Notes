@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
 
 let noteSchema = new mongoose.Schema({
-  title :String,
+  title: String,
   body: String,
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
-  author :{
+  author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:'User',
-    require : true
+    ref: 'User',
+    required: true
   }
-})
+});
+
+noteSchema.index({'title': 'text', 'body': 'text'});
 
 module.exports = mongoose.model('Note', noteSchema);
