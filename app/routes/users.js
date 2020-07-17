@@ -7,7 +7,7 @@ const secret = process.env.JWT_TOKEN;
 
 
 /* GET users listing. */
-router.post('/regiter', async (req, res)=>{
+router.post('/register', async (req, res)=>{
   const {name, email, password} = req.body;
   const user = new User({name,email, password});
 
@@ -31,7 +31,7 @@ router.post('/login', async(req,res)=>{
         if (!same) {
           res.status(401).json({error: 'Incorrect password'});
         } else {
-          const token = jwt.sign({email}, secret, {expiresIn:'1d'});
+          const token = jwt.sign({email}, secret, {expiresIn:'10d'});
           res.json({user: user, token: token });
           
         }
