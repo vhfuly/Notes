@@ -4,6 +4,7 @@ const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const secret = process.env.JWT_TOKEN;
+const withAuth = require('../middlewares/auth');
 
 
 /* GET users listing. */
@@ -18,6 +19,48 @@ router.post('/register', async (req, res)=>{
     res.status(500).json({error :'Error registering new user please try again'});
   }
 
+})
+
+router.put('/password', withAuth, async (req,res)=>{
+  const {password} =req.body;
+
+  try {
+    let user = await User.findOne({_id: req.user._id});
+     user.password = password;
+     user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({error:'Problem to update a password'});
+  }
+
+ 
+})
+
+router.put('/', withAuth, async (req,res)=>{
+  const {name, email } =req.body;
+
+  try {
+    let user = await User.findOneAndUpdate(
+      {_id: req.user._id}, 
+      { $set: { name: name, email: email}}, 
+      { upsert: true, 'new': true }
+    )
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({error:'Problem to update a name and email'});
+  }
+
+ 
+})
+router.delete('/', withAuth, async(req,res)=>{
+  
+  try {
+    let user = await User.findOne({_id: req.user._id});
+    await user.delete();
+    res.json({message: 'OK'}).status(204);
+  } catch (error) {
+    res.status(500).json({error:'Problem to delet a user'});
+  }
 })
 
 router.post('/login', async(req,res)=>{
